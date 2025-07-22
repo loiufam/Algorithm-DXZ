@@ -294,7 +294,7 @@ std::string DancingLinks::getColumnState() const {
 ZDDNode* DancingLinks::search()
 {
     if(root->right == root){
-        countSolution++;
+        // countSolution++;
         return T;
     }
 
@@ -302,7 +302,7 @@ ZDDNode* DancingLinks::search()
     //std::cout<< columnState << std::endl;
     // 查找缓存
     if (C.find(columnState) != C.end()) {
-        countSolution++;
+        // countSolution++;
         return C[columnState]; 
     }
 

@@ -169,6 +169,44 @@ std::vector<std::string> binaryTreePaths(ZDDNode* root) {
     return paths;
 }
 
+vector<vector<int>> TranFileToMatrix(const std::string& filename, int& r, int& c) { 
+    std::ifstream file(filename);
+    if(!file.is_open()) {
+        throw std::runtime_error("无法打开文件");
+    }
+
+    std::string line;
+    std::getline(file, line);  // 读取第一行
+    std::istringstream iss(line);
+    int n, m;
+    iss >> n >> m;  // 假设第一行格式为 "n m"
+    c = n;
+    r = m;
+
+    vector<vector<int>> tmp_matrix(r, vector<int>(c, 0));
+
+    int row = 0;
+    while (std::getline(file, line))
+    {
+        std::istringstream rowStream(line);
+        int col, count;
+
+        // 读取该行“1”的个数
+        rowStream >> count;
+
+        for (int i = 0; i < count; ++i) {
+            rowStream >> col;  // 读取列索引
+            if (col > 0 && col <= n) {  // 确保列索引在有效范围内
+               tmp_matrix[row][col - 1] = 1;  // 由于数组索引从0开始，所以减1
+            }
+        }
+        row++;
+    }
+    
+    file.close();
+    return tmp_matrix;
+}
+
 // 主函数
 int main() {
 
@@ -176,14 +214,16 @@ int main() {
         // 文件夹路径
         const std::string folderPath1 = "/Users/luoyaohui/VSCodeProjects/code_projects/algorithmLab/DLX/exact_cover_benchmark";
         const std::string folderPath2 = "/Users/luoyaohui/VSCodeProjects/code_projects/algorithmLab/DLX/set_partitioning_benchmarks";
+        const std::string folderd3x = "../../SDX/data/dataset_d3x";
         //遍历文件夹
-        for (const auto& entry : fs::directory_iterator(folderPath2)) {
+        for (const auto& entry : fs::directory_iterator(folderd3x)) {
             if (entry.is_regular_file() && entry.path().extension() == ".txt"){
                 
                 int r;
                 int c;
+                std::cout << "当前文件: " << entry.path().filename().string() << std::endl;
                 // std::vector<std::vector<int>> X = processFileToMatrix(entry.path().string(), r, c);
-                std::vector<std::vector<int>> X = proFileToMat(entry.path(), r, c);
+                std::vector<std::vector<int>> X = TranFileToMatrix(entry.path().string(), r, c);
  
                 {
               
@@ -196,16 +236,15 @@ int main() {
                 auto end = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
-                std::cout<<"当前文件: "<< entry.path().filename().string() << std::endl;
                 std::cout << "Search Compulation Time: " << duration.count() << " seconds." << std::endl;
 
 
                 
                 //统计ZDD节点个数(使用缓存时统计)
-                std::cout << "节点数量: " << dlm.countNum << std::endl;
+                // std::cout << "节点数量: " << dlm.countNum << std::endl;
 
                 //std::vector<std::string> paths = binaryTreePaths(z);
-                std::cout<<"solution nums: "<< dlm.countSolution<<std::endl; // 不采用缓存时统计
+                // std::cout<<"solution nums: "<< dlm.countSolution<<std::endl; // 不采用缓存时统计
                 // for (const auto& path : paths) {
                 //     std::cout << path << std::endl;
                 // }
