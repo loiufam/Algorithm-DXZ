@@ -239,46 +239,51 @@ ZDDNode* DancingLinks::unique(int r, ZDDNode* x, ZDDNode* y)
 {
     countNum++; //计数器加1
     //std::cout<< "第" << countNum << "次 " << "labe: " << r << std::endl;
-    std::size_t key = hashFunction(r, x, y);
-    if (Z.find(key) == Z.end()) {  //如果没有找到解
-        ZDDNode* lo = x;
-        ZDDNode* hi = y;
-
-        //先检查下x和y是否都为终端节点
-        if(x->isTerminal && y->isTerminal){
-           Z[key] = new ZDDNode(r, lo, hi); 
-           return Z[key];
-        }
-
-        //如果x，y都为分支节点,x指向的是已找到的解, 并且x，y都存在Z中
-        if(!x->isTerminal && !y->isTerminal){
-            //如果y存在缓存, 说明也存在Z中（DXZ）
-            if (C.find(getColumnState()) != C.end()) {
-                hi = C[getColumnState()];    
-            }
-
-            //如果不使用缓冲，可以在Z中寻找(Z)
-            // std::size_t key = hashFunction(y->label, y->lo, y->hi);
-            // if (Z.find(key) != Z.end()) {
-            //     countNum--; //计数器减1
-            //     hi = Z[key];
-            // }
-            
-           Z[key] = new ZDDNode(r, lo, hi); 
-           return Z[key]; 
-        }
-        
-        // 如果x或y是终端节点，尝试在另一个节点中找到匹配的终端节点
-        if (x->isTerminal) {
-            lo = F;
-        } else if (y->isTerminal) { // 此时说明r覆盖了当前矩阵的所有列
-            hi = T;
-        }
-
-        // 创建新的ZDDNode
-        Z[key] = new ZDDNode(r, lo, hi);
+    if (x == y) {
+        return x;
     }
-    return Z[key];
+    
+    std::size_t key = hashFunction(r, x, y);
+    if (Z.find(key) != Z.end()) {
+        return Z[key];
+    }
+
+    Z[key] = new ZDDNode(r, x, y); 
+    return Z[key];  
+
+    // if (Z.find(key) == Z.end()) {  //如果没有找到解
+    //     ZDDNode* lo = x;
+    //     ZDDNode* hi = y;
+
+    //     //先检查下x和y是否都为终端节点
+    //     if(x->isTerminal && y->isTerminal){
+    //        Z[key] = new ZDDNode(r, lo, hi); 
+    //        return Z[key];
+    //     }
+
+    //     //如果x，y都为分支节点,x指向的是已找到的解, 并且x，y都存在Z中
+    //     if(!x->isTerminal && !y->isTerminal){
+    //         //如果y存在缓存, 说明也存在Z中（DXZ）
+    //         if (C.find(getColumnState()) != C.end()) {
+    //             hi = C[getColumnState()];    
+    //         }
+
+            
+    //        Z[key] = new ZDDNode(r, lo, hi); 
+    //        return Z[key]; 
+    //     }
+        
+    //     // 如果x或y是终端节点，尝试在另一个节点中找到匹配的终端节点
+    //     if (x->isTerminal) {
+    //         lo = F;
+    //     } else if (y->isTerminal) { // 此时说明r覆盖了当前矩阵的所有列
+    //         hi = T;
+    //     }
+
+    //     // 创建新的ZDDNode
+    //     Z[key] = new ZDDNode(r, lo, hi);
+    // }
+    // return Z[key];
 }
 
 std::string DancingLinks::getColumnState() const {

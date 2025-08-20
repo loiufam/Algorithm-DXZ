@@ -44,6 +44,11 @@ struct ZDDNode {
     ZDDNode(int label, ZDDNode* lo, ZDDNode* hi, bool isTerminal = false)
         : label(label), lo(lo), hi(hi), isTerminal(isTerminal) {}
     
+    // 等价节点比较
+    bool operator==(const ZDDNode& other) const {
+        return label == other.label && lo == other.lo && hi == other.hi && isTerminal == other.isTerminal;
+    }
+
     // 拷贝构造函数
     ZDDNode(const ZDDNode& other) : label(other.label), isTerminal(other.isTerminal), lo(other.lo), hi(other.hi) {}
 
